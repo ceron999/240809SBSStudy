@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestNetworkScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/SBSStudyScene.unity
+    guid: fd2122de859befd4cb3c332f1d7f5982
   m_configObjects: {}

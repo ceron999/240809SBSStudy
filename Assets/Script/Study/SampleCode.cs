@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SampleCode : MonoBehaviour
 {
-    void Start()
+    private void Start()
     {
         Debug.Log("hello world");
     }
