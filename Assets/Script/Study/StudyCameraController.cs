@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CameraController1 : MonoBehaviour
+public class StudyCameraController : MonoBehaviour
 {
     //Camera
     public float cameraXRotateMove;
@@ -14,8 +14,8 @@ public class CameraController1 : MonoBehaviour
 
     private void Start()
     {
-        cameraXRotate = transform.rotation.x;
-        cameraYRotate = transform.rotation.y;
+        cameraXRotate = transform.eulerAngles.x;
+        cameraYRotate = transform.eulerAngles.y;
 
     }
 

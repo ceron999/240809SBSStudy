@@ -20,7 +20,7 @@ public class HTTPPrectice : MonoBehaviour
     //내 구글 드라이브/HTTPPrec 접근
     public string url = "https://drive.google.com/drive/folders/1O8s_BDiMeIZpGsO4Ed92-Xgp39iQXZvO?usp=sharing";
     //드라이브/HTTPPrec/TestTxt.txt ID
-    public string testTxtUrl = "https://docs.google.com/uc?export=download&id=1BiQcxw7d1HJbXElfWERpjZhz-XdvV6OpXiDMQvtEa5M";
+    public string testTxtUrl = "https://docs.google.com/document/d/1BiQcxw7d1HJbXElfWERpjZhz-XdvV6OpXiDMQvtEa5M/edit?usp=sharing";
     //드라이브/HTTPPrec/ChickenImg.png ID
     public string testImageUrl = "https://drive.google.com/uc?export=download&id=1u3mN0EZe1qlNi8sp6lEmuh2zKBnT3MZZ";
     #endregion
@@ -42,18 +42,18 @@ public class HTTPPrectice : MonoBehaviour
     {
         #region Img Load
         ////GET Prectice
-        //Debug.Log("drive/Chicken URL");
+        Debug.Log("drive/Chicken URL");
 
-        ////Image 전용 urlBuilder 생성
-        //StartCoroutine(GetImage(testImageUrl));
+        //Image  생성
+        StartCoroutine(GetImage(testImageUrl));
         #endregion
 
         #region Text Load
         //GET Prectice
         Debug.Log("drive/TestTxt URL");
 
-        //Image 전용 urlBuilder 생성
-        StartCoroutine(GetText(testTxtUrl));
+        //Text 생성
+        StartCoroutine(GetText(url));
         #endregion
     }
 
@@ -88,6 +88,7 @@ public class HTTPPrectice : MonoBehaviour
         if (wr.result != UnityWebRequest.Result.Success)
         {
             Debug.Log(wr.error);
+            Debug.Log(wr.downloadHandler.text);
         }
         else
         {
@@ -109,7 +110,7 @@ public class HTTPPrectice : MonoBehaviour
         }
         else
         {
-            Debug.Log("Success");
+            Debug.Log("Img Success");
 
             //texture to sprite
             Texture2D t = ((DownloadHandlerTexture)wr.downloadHandler).texture;

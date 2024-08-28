@@ -7,9 +7,49 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
 
-public class SampleEvent : MonoBehaviour
+#region Test Class and Struct
+[System.Serializable]
+public class TestClass
+{
+    public int testInt;
+    public float testFloat;
+    public double testDouble;
+
+    public bool testBool;
+
+    public TestClass(int getInt = 0, float getFloat = 0f,
+        double getDouble = 0f, bool getBool = false)
+    {
+        testInt = getInt;
+        testFloat = getFloat;
+        testDouble = getDouble;
+        testBool = getBool;
+    }
+}
+
+public struct TestStruct
+{
+    public int testInt;
+    public float testFloat;
+    public double testDouble;
+
+    public bool testBool;
+
+    public TestStruct(int getInt = 0, float getFloat = 0f,
+        double getDouble = 0f, bool getBool = false)
+    {
+        testInt = getInt;
+        testFloat = getFloat;
+        testDouble = getDouble;
+        testBool = getBool;   
+    }
+}
+#endregion
+
+public class EventAndActionStudy : MonoBehaviour
 {
     public delegate void DamageCallBack(float damage);
+    public delegate TestStruct TestStructFunction();
     public event EventHandler testEventHandler;
     public event DamageCallBack OnDamaged;
 
