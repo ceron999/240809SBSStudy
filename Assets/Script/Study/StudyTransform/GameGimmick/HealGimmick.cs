@@ -7,7 +7,7 @@ public class HealGimmick : MonoBehaviour
     public float healAmount;
     public float healDelay;
 
-    private CharacterBase player;
+    private StudyCharacterBase player;
     private float lastHealTime;
 
     private void Update()
@@ -27,7 +27,7 @@ public class HealGimmick : MonoBehaviour
     {
         if (other.transform.root.CompareTag("Player"))
         {
-            player = other.transform.root.GetComponent<CharacterBase>();
+            player = other.transform.root.GetComponent<StudyCharacterBase>();
             player.Heal(healAmount);
         }
     }

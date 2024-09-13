@@ -70,8 +70,8 @@ public class MineGimmick : MonoBehaviour
     {
         if(target.CompareTag("Player"))
         {
-            target.GetComponent<CharacterBase>().CurrHp -= damage;
-            Debug.Log("Now Hp : " +  target.GetComponent<CharacterBase>().CurrHp);
+            target.GetComponent<StudyCharacterBase>().CurrHp -= damage;
+            Debug.Log("Now Hp : " +  target.GetComponent<StudyCharacterBase>().CurrHp);
             Destroy(this.gameObject);
         }
         else
