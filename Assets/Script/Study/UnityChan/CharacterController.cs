@@ -11,15 +11,20 @@ public class CharacterController : MonoBehaviour
         character = GetComponent<CharacterBase>();
     }
 
+    private void Start()
+    {
+        InputSystem.Instance.OnClickSpace += CommandJump;
+    }
+
     private void Update()
     {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
-        Vector2 input = new Vector2 (inputX, inputY);
+        character.Move(InputSystem.Instance.Movement);
+        character.Rotate(InputSystem.Instance.Look.x);
+        character.SetRunning(InputSystem.Instance.IsLeftShift);
+    }
 
-        bool isLeftShifPressed = Input.GetKey(KeyCode.LeftShift);
-
-        character.Move(input);
-        character.SetRunning(isLeftShifPressed);
+    void CommandJump()
+    {
+        character.Jump();
     }
 }
