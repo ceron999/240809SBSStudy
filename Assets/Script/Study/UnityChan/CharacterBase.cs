@@ -33,6 +33,7 @@ public class CharacterBase : MonoBehaviour
     #endregion
 
     public Animator characterAnimator;
+    public UnityEngine.CharacterController unityCharacterController;
     public CharacterStatData characterStat;
 
     public Vector2 movement;
@@ -56,6 +57,7 @@ public class CharacterBase : MonoBehaviour
     private void Awake()
     {
         characterAnimator = GetComponent<Animator>();
+        unityCharacterController =GetComponent<UnityEngine.CharacterController>();
     }
 
     private void Update()
@@ -66,7 +68,8 @@ public class CharacterBase : MonoBehaviour
         Vector3 moveVec = new Vector3(movementBlend.x, verticalVelocity, movementBlend.y);
 
         float targetSpeed = isRunning ? characterStat.RunSpeed : characterStat.WalkSpeed;
-        transform.Translate(targetSpeed * moveVec * Time.deltaTime, Space.Self);
+        //transform.Translate(targetSpeed * moveVec * Time.deltaTime, Space.Self);
+        unityCharacterController.Move(targetSpeed * moveVec * Time.deltaTime);
 
         runningBlend = Mathf.Lerp(runningBlend, isRunning ? 1f : 0f, Time.deltaTime * 10f);
 
@@ -138,8 +141,10 @@ public class CharacterBase : MonoBehaviour
                         Debug.Log(overlappedObjects[i].name + " 2");
                         detectedObjects.Add(overlappedObjects[i]);
 
-                        SandBackObject target = hitInfo.transform.GetComponent<SandBackObject>();
-                        target.ApplyDamage(attackDamage);
+                        if(hitInfo.transform.TryGetComponent(out IDamage target))
+                        {
+                            target.ApplyDamage(attackDamage);
+                        }
                     }
                 }
             }

@@ -18,6 +18,7 @@ public class InputSystem : MonoBehaviour
 
     public System.Action OnClickSpace;
     public System.Action OnClickLeftMouseBtn;
+    public System.Action OnClickInteract;
 
     private void Awake()
     {
@@ -34,6 +35,11 @@ public class InputSystem : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnClickInteract?.Invoke();
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             OnClickLeftMouseBtn?.Invoke();
