@@ -509,7 +509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7300359044564895322, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7300359044564895322, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
       propertyPath: m_LocalPosition.z
@@ -571,6 +571,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7300359044565195386, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1308464279}
+    - targetCorrespondingSourceObject: {fileID: 7300359044565195386, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1308464283}
+    - targetCorrespondingSourceObject: {fileID: 7300359044565195386, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1308464284}
   m_SourcePrefab: {fileID: 100100000, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
 --- !u!1 &1308464274 stripped
 GameObject:
@@ -635,6 +641,7 @@ MonoBehaviour:
   isRunning: 0
   runningBlend: 0
   groundCheckDistance: 0.1
+  groundOffset: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -643,6 +650,44 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7300359044572588284, guid: 36a8558caf134ed4e8f927c56a7d9f86, type: 3}
   m_PrefabInstance: {fileID: 1308464273}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1308464283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308464274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d8be42346658d42b94c784dc98611e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!143 &1308464284
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308464274}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.6
+  m_Radius: 0.25
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.001
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!1 &1345324690
 GameObject:
   m_ObjectHideFlags: 0

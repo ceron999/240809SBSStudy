@@ -17,6 +17,7 @@ public class InputSystem : MonoBehaviour
     private bool isShowCursor = false;
 
     public System.Action OnClickSpace;
+    public System.Action OnClickLeftMouseBtn;
 
     private void Awake()
     {
@@ -33,6 +34,11 @@ public class InputSystem : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnClickLeftMouseBtn?.Invoke();
+        }
+
         if(Input.GetKeyDown(KeyCode.Space))
         {
             OnClickSpace?.Invoke();

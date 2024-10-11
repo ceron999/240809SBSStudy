@@ -14,6 +14,7 @@ public class CharacterController : MonoBehaviour
     private void Start()
     {
         InputSystem.Instance.OnClickSpace += CommandJump;
+        InputSystem.Instance.OnClickLeftMouseBtn += CommandAttack;
     }
 
     private void Update()
@@ -26,5 +27,10 @@ public class CharacterController : MonoBehaviour
     void CommandJump()
     {
         character.Jump();
+    }
+
+    void CommandAttack()
+    {
+        character.Attack();
     }
 }

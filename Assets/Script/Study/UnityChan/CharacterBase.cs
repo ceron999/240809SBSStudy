@@ -14,6 +14,18 @@ public class CharacterBase : MonoBehaviour
     public bool isRunning = false;
     public float runningBlend;
 
+    [Header("점프 세팅")]
+    private bool isGrounded = false;
+    private float jumpForce = 3f;
+    private float verticalVelocity = 0f;
+    private float gravity = -9.8f;
+    private float jumpTimeDelta = 0f;
+    private float jumpTimeout = 0.3f;
+    private const float JUMP_DELAY = 3f;
+    public float groundCheckDistance = 0.1f;
+    public float groundOffset = 0.1f;
+    public LayerMask groundLayer;
+
     private void Awake()
     {
         characterAnimator = GetComponent<Animator>();
@@ -58,17 +70,6 @@ public class CharacterBase : MonoBehaviour
         isRunning = isRun;
     }
 
-    [Header("점프 세팅")]
-    private bool isGrounded = false;
-    private float jumpForce = 3f;
-    private float verticalVelocity = 0f;
-    private float gravity = -9.8f;
-    private float jumpTimeDelta = 0f;
-    private float jumpTimeout = 0.3f;
-    private const float JUMP_DELAY = 3f;
-    public float groundCheckDistance = 0.1f;
-    public LayerMask groundLayer;
-
     public void Jump()
     {
         if (isGrounded && jumpTimeDelta <= 0f)
@@ -76,7 +77,14 @@ public class CharacterBase : MonoBehaviour
             verticalVelocity = jumpForce;
             jumpTimeDelta = JUMP_DELAY;
             jumpTimeout = 0.3f;
+
+            characterAnimator.SetTrigger("JumpTrigger");
         }
+    }
+
+    public void Attack()
+    {
+        characterAnimator.SetTrigger("AttackTrigger");
     }
 
     public void FreeFall()
@@ -101,6 +109,9 @@ public class CharacterBase : MonoBehaviour
 
     public void CheckGround()
     {
+        Vector3 spherePosition = transform.position + (Vector3.down * groundOffset);
         isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundLayer);
+
+        characterAnimator.SetBool("IsGrounded", isGrounded);
     }
 }
