@@ -1,10 +1,37 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class CharacterBase : MonoBehaviour
 {
+    #region 공격 데이터 
+    private void OnDrawGizmos()
+    {
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireSphere(transform.position, sensorRadius);
+
+        //for(int i = 0; i< detectedObjects.Count; i++)
+        //{
+        //    Gizmos.color = Color.green;
+        //    Vector3 startPos = transform.position + Vector3.up;
+        //    Vector3 endPos = detectedObjects[i].transform.position;
+
+        //    Gizmos.DrawLine(startPos, endPos);
+        //}
+    }
+
+    public float attackRange = 3f;
+    public float attackAngle = 80f;
+    public float attackDamage = 10f;
+    public LayerMask characterLayer;
+    public LayerMask detectLayer;
+
+    public Collider[] overlappedObjects;
+    public List<Collider> detectedObjects = new List<Collider>();
+    #endregion
+
     public Animator characterAnimator;
     public CharacterStatData characterStat;
 
@@ -85,6 +112,38 @@ public class CharacterBase : MonoBehaviour
     public void Attack()
     {
         characterAnimator.SetTrigger("AttackTrigger");
+
+        overlappedObjects = Physics.OverlapSphere(transform.position, attackRange, characterLayer);
+        detectedObjects.Clear();
+        for (int i = 0; i < overlappedObjects.Length; i++)
+        {
+            if (overlappedObjects[i].transform.root == this.transform)
+                continue;
+
+            Vector3 direction = overlappedObjects[i].transform.position - transform.position;
+            float dot = Vector3.Dot(transform.forward.normalized, direction.normalized);
+
+            if (dot > Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad))
+            {
+                Debug.Log(overlappedObjects[i].name);
+                Vector3 rayStartPos = transform.position + Vector3.up;
+                Vector3 rayDirection = overlappedObjects[i].transform.position - transform.position;
+                rayDirection.y = 0;
+
+                if (Physics.Raycast(rayStartPos, rayDirection, out RaycastHit hitInfo, attackRange, detectLayer))
+                {
+                    Debug.Log(overlappedObjects[i].name + " 1");
+                    if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Character"))
+                    {
+                        Debug.Log(overlappedObjects[i].name + " 2");
+                        detectedObjects.Add(overlappedObjects[i]);
+
+                        SandBackObject target = hitInfo.transform.GetComponent<SandBackObject>();
+                        target.ApplyDamage(attackDamage);
+                    }
+                }
+            }
+        }
     }
 
     public void FreeFall()

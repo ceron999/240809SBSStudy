@@ -8,17 +8,17 @@ public class GizmoController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        //Gizmos.color = Color.red;
 
-        Vector3 startPos = transform.position + Vector3.up;
-        Vector3 endPos = startPos + (transform.forward * distance);
+        //Vector3 startPos = transform.position + Vector3.up;
+        //Vector3 endPos = startPos + (transform.forward * distance);
 
-        Gizmos.DrawLine(startPos, endPos);
+        //Gizmos.DrawLine(startPos, endPos);
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(endPos, 1f);
+        //Gizmos.color = Color.yellow;
+        //Gizmos.DrawWireSphere(endPos, 1f);
 
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(endPos + Vector3.right, new Vector3(3f,1f,2f));
+        //Gizmos.color = Color.blue;
+        //Gizmos.DrawWireCube(endPos + Vector3.right, new Vector3(3f,1f,2f));
     }
 }
