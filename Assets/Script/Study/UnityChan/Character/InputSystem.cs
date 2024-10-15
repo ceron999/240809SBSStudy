@@ -17,8 +17,10 @@ public class InputSystem : MonoBehaviour
     private bool isShowCursor = false;
 
     public System.Action OnClickSpace;
-    public System.Action OnClickLeftMouseBtn;
+    public System.Action OnClickLeftMouseButton;
     public System.Action OnClickInteract;
+    public System.Action<float> OnMouseScrollWheel;
+    public System.Action OnClickThrowButton;
 
     private void Awake()
     {
@@ -35,6 +37,11 @@ public class InputSystem : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            OnClickThrowButton?.Invoke();
+        }
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             OnClickInteract?.Invoke();
@@ -42,7 +49,7 @@ public class InputSystem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            OnClickLeftMouseBtn?.Invoke();
+            OnClickLeftMouseButton?.Invoke();
         }
 
         if(Input.GetKeyDown(KeyCode.Space))
@@ -63,6 +70,12 @@ public class InputSystem : MonoBehaviour
         look = isShowCursor ? Vector2.zero : new Vector2(lookX, lookY);
 
         isLeftShift = Input.GetKey(KeyCode.LeftShift);
+
+        float mouseScroll = Input.GetAxis("Mouse ScrollWheel");
+        if(mouseScroll > 0 || mouseScroll <0)
+        {
+            OnMouseScrollWheel?.Invoke(mouseScroll);
+        }
     }
 
     // 커서 컨트롤

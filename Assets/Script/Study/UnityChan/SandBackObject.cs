@@ -20,10 +20,8 @@ public class SandBackObject : MonoBehaviour, IDamage
             float currentHpRatio = currentHP/(float)maxHp;
             for (int i = 0; i < visualDatas.Length; i++)
             {
-                Debug.Log(currentHpRatio + " " + i);
                 if(currentHpRatio>= visualDatas[i].rangeMin && currentHpRatio < visualDatas[i].rangeMax)
                 {
-                    Debug.Log("ÃÖÁ¾ " + i);
                     visualDataIndex = i;
                 }
             }

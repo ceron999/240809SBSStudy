@@ -54,10 +54,27 @@ public class CharacterBase : MonoBehaviour
     public float groundOffset = 0.1f;
     public LayerMask groundLayer;
 
+    [Header("ÇöÀç °ª")]
+    public float currentHP;
+    public float currentSP;
+
+    public float CurrentHP => currentHP;
+    public float CurrentSP => currentSP;
+    public float MaxHP => characterStat.MaxHP;
+    public float MaxSP => characterStat.MaxSP;
+
     private void Awake()
     {
         characterAnimator = GetComponent<Animator>();
         unityCharacterController =GetComponent<UnityEngine.CharacterController>();
+
+        currentHP = characterStat.MaxHP;
+        currentSP = characterStat.MaxSP;
+    }
+
+    private void Start()
+    {
+        
     }
 
     private void Update()
@@ -128,7 +145,6 @@ public class CharacterBase : MonoBehaviour
 
             if (dot > Mathf.Cos(attackAngle * 0.5f * Mathf.Deg2Rad))
             {
-                Debug.Log(overlappedObjects[i].name);
                 Vector3 rayStartPos = transform.position + Vector3.up;
                 Vector3 rayDirection = overlappedObjects[i].transform.position - transform.position;
                 rayDirection.y = 0;
