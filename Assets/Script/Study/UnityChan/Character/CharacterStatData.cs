@@ -10,4 +10,7 @@ public class CharacterStatData : ScriptableObject
 
     public float RunSpeed = 2.5f;
     public float WalkSpeed = 1f;
+
+    public float RunStaminaCost = 3f;
+    public float StaminaRecoverySpeed = 2f;
 }

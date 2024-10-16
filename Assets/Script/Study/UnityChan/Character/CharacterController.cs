@@ -36,8 +36,6 @@ public class CharacterController : MonoBehaviour
         InputSystem.Instance.OnMouseScrollWheel += CommandMouseScrollWheel;
         InputSystem.Instance.OnClickThrowButton += CommandThrow;
 
-        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
-        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
     }
 
     public void CommandThrow()
@@ -131,6 +129,9 @@ public class CharacterController : MonoBehaviour
         character.Move(InputSystem.Instance.Movement);
         character.Rotate(InputSystem.Instance.Look.x);
         character.SetRunning(InputSystem.Instance.IsLeftShift);
+
+        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
+        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
     }
 
     private void CommandJump()

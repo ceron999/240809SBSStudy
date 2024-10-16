@@ -84,11 +84,28 @@ public class CharacterBase : MonoBehaviour
 
         Vector3 moveVec = new Vector3(movementBlend.x, verticalVelocity, movementBlend.y);
 
-        float targetSpeed = isRunning ? characterStat.RunSpeed : characterStat.WalkSpeed;
-        //transform.Translate(targetSpeed * moveVec * Time.deltaTime, Space.Self);
-        unityCharacterController.Move(targetSpeed * moveVec * Time.deltaTime);
+        if(isRunning)
+        {
+            currentSP -= (characterStat.RunStaminaCost * Time.deltaTime);
+            currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
+        }
+        else
+        {
+            currentSP += (characterStat.StaminaRecoverySpeed * Time.deltaTime);
+            currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
+        }
+        float targetSpeed = isRunning && currentSP > 0 ? characterStat.RunSpeed : characterStat.WalkSpeed;
 
-        runningBlend = Mathf.Lerp(runningBlend, isRunning ? 1f : 0f, Time.deltaTime * 10f);
+        Vector3 cameraForward = Camera.main.transform.forward.normalized;
+        cameraForward.y = 0;
+        Vector3 cameraRight = Camera.main.transform.right.normalized;
+        cameraRight.y = 0;
+        Vector3 resultMovement = cameraForward * moveVec.z + cameraRight * moveVec.x;
+        resultMovement.y = verticalVelocity;
+
+        unityCharacterController.Move(targetSpeed * resultMovement * Time.deltaTime);
+
+        runningBlend = Mathf.Lerp(runningBlend, isRunning && currentSP > 0 ? 1f : 0f, Time.deltaTime * 10f);
 
         // Movement Blend : 를 이용하는 이유는 애니메이션에 적용할 parameter 값을 갑자기 튀지 않도록
         // 하기 위해서 중간(보간)값을 구해서 적용을 했음
