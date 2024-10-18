@@ -38,6 +38,24 @@ public class CharacterController : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        CheckOverlapInteractionObject();
+
+        character.Move(InputSystem.Instance.Movement, 0f);
+        character.Rotate(InputSystem.Instance.Look.x);
+        character.SetRunning(InputSystem.Instance.IsLeftShift);
+
+        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
+        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
+
+        //TPS
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            character.SetArmed(!character.IsArmed);
+        }
+    }
+
     public void CommandThrow()
     {
         if (isThrowMode)
@@ -122,18 +140,6 @@ public class CharacterController : MonoBehaviour
         interactionUI.SetInteractableObjects(interactableObjects);
     }
 
-    private void Update()
-    {
-        CheckOverlapInteractionObject();
-
-        character.Move(InputSystem.Instance.Movement);
-        character.Rotate(InputSystem.Instance.Look.x);
-        character.SetRunning(InputSystem.Instance.IsLeftShift);
-
-        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
-        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
-    }
-
     private void CommandJump()
     {
         character.Jump();
@@ -141,6 +147,9 @@ public class CharacterController : MonoBehaviour
 
     private void CommandAttack()
     {
-        character.Attack();
+        if(!character.IsArmed)
+        {
+            character.IsArmed = true;
+        }
     }
 }

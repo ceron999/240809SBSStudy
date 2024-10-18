@@ -37,6 +37,7 @@ public class InputSystem : MonoBehaviour
 
     private void Update()
     {
+        // 입력값 설정
         if(Input.GetKeyDown(KeyCode.G))
         {
             OnClickThrowButton?.Invoke();
@@ -59,18 +60,22 @@ public class InputSystem : MonoBehaviour
 
         // 커서 컨트롤
         SetShowCursor();
-
+        
+        // 이동 벡터 설정
         float inputX = Input.GetAxis("Horizontal");
         float inputY = Input.GetAxis("Vertical");
         movement = new Vector2(inputX, inputY);
 
+        // 시야 위치 설정
         float lookX = Input.GetAxis("Mouse X");
         float lookY = Input.GetAxis("Mouse Y");
 
         look = isShowCursor ? Vector2.zero : new Vector2(lookX, lookY);
 
+        // 달리기 설정
         isLeftShift = Input.GetKey(KeyCode.LeftShift);
 
+        // 상호작용 전용 마우스 휠 값 설정
         float mouseScroll = Input.GetAxis("Mouse ScrollWheel");
         if(mouseScroll > 0 || mouseScroll <0)
         {
