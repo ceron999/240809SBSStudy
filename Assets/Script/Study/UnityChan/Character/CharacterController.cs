@@ -42,7 +42,7 @@ public class CharacterController : MonoBehaviour
     {
         CheckOverlapInteractionObject();
 
-        character.Move(InputSystem.Instance.Movement, 0f);
+        character.Move(InputSystem.Instance.Movement, Camera.main.transform.eulerAngles.y);
         character.Rotate(InputSystem.Instance.Look.x);
         character.SetRunning(InputSystem.Instance.IsLeftShift);
 

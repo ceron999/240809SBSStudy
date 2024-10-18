@@ -22,7 +22,7 @@ public class CharacterBase : MonoBehaviour
     public bool IsArmed { get; set; } = false;
     public bool IsRunning { get; set; } = false;
 
-    public float moveSpeed = 1.5f;
+    public float moveSpeed;
     public float walkSpeed = 1.5f;
     public float runSpeed = 3f;
 
@@ -38,7 +38,9 @@ public class CharacterBase : MonoBehaviour
     #region 이동 데이터
     public Vector2 movement;
     public Vector2 movementBlend;
+    public float targetRotation;
     public float rotation = 0f;
+    public float rotationSpeed = 0.1f;
 
     [Header("점프 세팅")]
     private bool isGrounded = false;
@@ -125,9 +127,23 @@ public class CharacterBase : MonoBehaviour
 
         speed = input.magnitude > 0 ? 1f : 0f;
 
-        Vector3 movement = transform.forward * vertical + transform.right * horizontal;
-        moveSpeed = IsRunning ? runSpeed : walkSpeed;
-        unityCharacterController.Move(movement * moveSpeed * Time.deltaTime);
+        if(IsArmed)
+        {
+            Vector3 movement = transform.forward * vertical + transform.right * horizontal;
+            moveSpeed = IsRunning ? runSpeed : walkSpeed;
+            unityCharacterController.Move(movement * moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            targetRotation = Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg + yAxisAngle;
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationSpeed, 0.1f);
+            transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+
+            if (input.magnitude > 0)
+            {
+                unityCharacterController.Move(transform.forward * moveSpeed * Time.deltaTime);
+            }
+        }
     }
 
 
