@@ -20,7 +20,7 @@ public class CharacterBase : MonoBehaviour
     public UnityEngine.CharacterController unityCharacterController;
 
     public bool IsArmed { get; set; } = false;
-    public bool IsRunning { get; set; } = false;
+    public bool IsRun { get; set; } = false;
 
     public float moveSpeed;
     public float walkSpeed = 1.5f;
@@ -68,6 +68,11 @@ public class CharacterBase : MonoBehaviour
     public float MaxSP => characterStat.MaxSP;
     #endregion
 
+    #region Shoot 관련 변수
+    public WeaponBase currentWeapon;
+    private bool isShooting = false;
+    private bool isReloading = false;
+    #endregion
     private void Awake()
     {
         characterAnimator = GetComponent<Animator>();
@@ -91,7 +96,21 @@ public class CharacterBase : MonoBehaviour
         // 이동(걷기, 뛰기)
         Vector3 moveVec = new Vector3(horizontal, verticalVelocity, vertical);
 
-        if (IsRunning)
+        if(isShooting)
+        {
+            bool isFireSuccess = currentWeapon.Fire();
+            if (false == isFireSuccess)
+            {
+                if(currentWeapon.RemainAmmo <=0 && false == isReloading)
+                {
+                    isReloading = true;
+                    Reload();
+                }
+            }
+            currentWeapon.Fire();
+        }
+
+        if (IsRun)
         {
             currentSP -= (characterStat.RunStaminaCost * Time.deltaTime);
             currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
@@ -102,7 +121,7 @@ public class CharacterBase : MonoBehaviour
             currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
         }
 
-        runningBlend = Mathf.Lerp(runningBlend, IsRunning && currentSP > 0 ? 1f : 0f, Time.deltaTime * 10f);
+        runningBlend = Mathf.Lerp(runningBlend, IsRun && currentSP > 0 ? 1f : 0f, Time.deltaTime * 10f);
 
         // Movement Blend : 를 이용하는 이유는 애니메이션에 적용할 parameter 값을 갑자기 튀지 않도록
         // 하기 위해서 중간(보간)값을 구해서 적용을 했음
@@ -110,7 +129,7 @@ public class CharacterBase : MonoBehaviour
 
         // 3. 애니메이션 값 설정
         armed = Mathf.Lerp(armed, IsArmed ? 1f : 0f, Time.deltaTime * 10f);
-        runningBlend = Mathf.Lerp(runningBlend, IsRunning ? 1f : 0f, Time.deltaTime * 10f);
+        runningBlend = Mathf.Lerp(runningBlend, IsRun ? 1f : 0f, Time.deltaTime * 10f);
 
         characterAnimator.SetFloat("Speed", speed);
         characterAnimator.SetFloat("Armed", armed);
@@ -130,19 +149,20 @@ public class CharacterBase : MonoBehaviour
         if(IsArmed)
         {
             Vector3 movement = transform.forward * vertical + transform.right * horizontal;
-            moveSpeed = IsRunning ? runSpeed : walkSpeed;
+            moveSpeed = IsRun ? runSpeed : walkSpeed;
             unityCharacterController.Move(movement * moveSpeed * Time.deltaTime);
         }
         else
         {
-            targetRotation = Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg + yAxisAngle;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationSpeed, 0.1f);
-            transform.rotation = Quaternion.Euler(0f, rotation, 0f);
-
             if (input.magnitude > 0)
             {
-                unityCharacterController.Move(transform.forward * moveSpeed * Time.deltaTime);
+                targetRotation = Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg + yAxisAngle;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationSpeed, 0.1f);
+                transform.rotation = Quaternion.Euler(0f, rotation, 0f);
             }
+
+            unityCharacterController.Move(transform.forward * moveSpeed * Time.deltaTime);
+            
         }
     }
 
@@ -155,7 +175,7 @@ public class CharacterBase : MonoBehaviour
 
     public void SetRunning(bool isRun)
     {
-        IsRunning = isRun;
+        IsRun = isRun;
     }
 
     public void Jump()
@@ -175,12 +195,24 @@ public class CharacterBase : MonoBehaviour
     public void SetArmed(bool isArmed)
     {
         IsArmed = isArmed;
-        weaponHolder.SetActive(isArmed);
+        //weaponHolder.SetActive(isArmed);
     }
 
-    public void Shoot()
+    public void Shoot(bool isShoot)
     {
+        isShooting = isShoot;
+    }
 
+    public void Reload()
+    {
+        isReloading = true;
+        characterAnimator.SetTrigger("Reload Trigger");
+    }
+
+    public void ReloadComplete()
+    {
+        currentWeapon.Reload();
+        isReloading = false;
     }
 
     #region 지형 확인 함수

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class CharacterControllerBasic : MonoBehaviour
 {
     public CharacterBase character;
     public LayerMask interactionLayer;
@@ -39,10 +39,7 @@ public class CharacterController : MonoBehaviour
     private void Start()
     {
         InputSystem.Instance.OnClickSpace += CommandJump;
-        //InputSystem.Instance.OnClickLeftMouseButtonDown += CommandAttack;
-        InputSystem.Instance.OnClickLeftMouseButtonDown += CommandFireStart;
-        InputSystem.Instance.OnClickLeftMouseButtonUp += CommandFireStop;
-
+        InputSystem.Instance.OnClickLeftMouseButtonDown += CommandAttack;
         InputSystem.Instance.OnClickInteract += CommandInteract;
         InputSystem.Instance.OnMouseScrollWheel += CommandMouseScrollWheel;
         InputSystem.Instance.OnClickThrowButton += CommandThrow;
@@ -75,8 +72,8 @@ public class CharacterController : MonoBehaviour
     {
         CameraRotation();
     }
-    #region Command Func
 
+    #region Command system
     public void CommandThrow()
     {
         if (isThrowMode)
@@ -107,7 +104,6 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
-
     public void CommandMouseScrollWheel(float delta)
     {
         if (delta > 0)
@@ -119,16 +115,6 @@ public class CharacterController : MonoBehaviour
             interactionUI.SelectNext();
         }
     }
-
-    private void CommandInteract()
-    {
-        if (interactableObjects != null && interactableObjects.Length > 0)
-        {
-            interactionUI.Execute();
-            //interactableObjects[0].Interact();
-        }
-    }
-
     private void CommandJump()
     {
         character.Jump();
@@ -142,18 +128,15 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    private void CommandFireStart()
+    private void CommandInteract()
     {
-        character.Shoot(true);
+        if (interactableObjects != null && interactableObjects.Length > 0)
+        {
+            interactionUI.Execute();
+            //interactableObjects[0].Interact();
+        }
     }
-
-    private void CommandFireStop()
-    {
-        character.Shoot(false);
-    }
-    
     #endregion
-
 
     public Vector3 CalculateThrowAsTime(float power, float time)
     {
@@ -169,7 +152,7 @@ public class CharacterController : MonoBehaviour
         return result;
     }
 
-
+    #region interaction system
     public void CheckOverlapInteractionObject()
     {
         Collider[] overlappedObjects = Physics.OverlapSphere(
@@ -187,8 +170,9 @@ public class CharacterController : MonoBehaviour
 
         interactionUI.SetInteractableObjects(interactableObjects);
     }
+    #endregion
 
-    #region Camera Func
+    #region Camera system
     private void CameraRotation()
     {
         if (InputSystem.Instance.Look.sqrMagnitude > 0f)

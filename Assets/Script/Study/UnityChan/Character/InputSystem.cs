@@ -17,7 +17,9 @@ public class InputSystem : MonoBehaviour
     private bool isShowCursor = false;
 
     public System.Action OnClickSpace;
-    public System.Action OnClickLeftMouseButton;
+    public System.Action OnClickLeftMouseButtonDown;
+    public System.Action OnClickLeftMouseButtonUp;
+
     public System.Action OnClickInteract;
     public System.Action<float> OnMouseScrollWheel;
     public System.Action OnClickThrowButton;
@@ -50,10 +52,15 @@ public class InputSystem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            OnClickLeftMouseButton?.Invoke();
+            OnClickLeftMouseButtonDown?.Invoke();
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonUp(0))
+        {
+            OnClickLeftMouseButtonUp?.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             OnClickSpace?.Invoke();
         }
