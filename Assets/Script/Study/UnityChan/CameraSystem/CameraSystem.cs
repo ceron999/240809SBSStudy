@@ -9,6 +9,8 @@ public enum CameraType
 
 public class CameraSystem : MonoBehaviour
 {
+    public static CameraSystem Instance { get; private set; } = null;
+
     // 각각의 VirtualCamera GameObject
     public Cinemachine.CinemachineVirtualCamera tpsCamera;
     public Cinemachine.CinemachineVirtualCamera quaterCamera;
@@ -16,6 +18,9 @@ public class CameraSystem : MonoBehaviour
 
     private CameraType currentCameraType = CameraType.TPS;
     bool isZoom = false;
+
+    public Vector3 AimingPoint {  get; private set; }
+    public LayerMask aimingLayerMask;
 
     public void ChangeCameraType(CameraType newType)
     {
@@ -40,6 +45,10 @@ public class CameraSystem : MonoBehaviour
                 fpsCamera.gameObject.SetActive(true);
                 break;
         }
+    }
+    private void Awake()
+    {
+        Instance = this;
     }
 
     private void Update()
@@ -66,5 +75,16 @@ public class CameraSystem : MonoBehaviour
 
         float targetPov = isZoom ? 20f : 60f;
         tpsCamera.m_Lens.FieldOfView = Mathf.Lerp(tpsCamera.m_Lens.FieldOfView, targetPov, Time.deltaTime * 5);
+
+        // Aiming Point 계산
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 1000f, aimingLayerMask, QueryTriggerInteraction.Ignore))
+        {
+            AimingPoint = hitInfo.point;
+        }
+        else
+        {
+            AimingPoint = ray.GetPoint(100f);
+        }
     }
 }

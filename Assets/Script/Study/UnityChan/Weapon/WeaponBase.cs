@@ -29,7 +29,10 @@ public class WeaponBase : MonoBehaviour
         Projectile bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         bullet.gameObject.SetActive(true);
         lastFireTime = Time.time;
-        // currentAmmo--;
+        currentAmmo--;
+
+        // Muzzle effect Ãâ·Â
+        EffectManager.Instance.CreateEffect(EffectType.Muzzle_01, firePoint.position,firePoint.rotation);
 
         return true;
     }

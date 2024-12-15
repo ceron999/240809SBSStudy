@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class CharacterBase : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class CharacterBase : MonoBehaviour
     #region 애니메이션
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
+    public Rig aimRig;
 
     public bool IsArmed { get; set; } = false;
     public bool IsRun { get; set; } = false;
@@ -72,6 +74,13 @@ public class CharacterBase : MonoBehaviour
     public WeaponBase currentWeapon;
     private bool isShooting = false;
     private bool isReloading = false;
+    public Vector3 AimingPoint 
+    {
+        get => aimingPointTrandform.position;
+        set => aimingPointTrandform.position = value;
+    }
+    public Transform aimingPointTrandform;
+
     #endregion
     private void Awake()
     {
@@ -80,6 +89,8 @@ public class CharacterBase : MonoBehaviour
 
         currentHP = characterStat.MaxHP;
         currentSP = characterStat.MaxSP;
+
+        SetArmed(false);
     }
 
     private void Start()
@@ -195,7 +206,8 @@ public class CharacterBase : MonoBehaviour
     public void SetArmed(bool isArmed)
     {
         IsArmed = isArmed;
-        //weaponHolder.SetActive(isArmed);
+        weaponHolder.SetActive(isArmed);
+        aimRig.weight = isArmed ? 1f : 0f;
     }
 
     public void Shoot(bool isShoot)

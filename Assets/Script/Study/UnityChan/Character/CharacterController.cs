@@ -57,6 +57,7 @@ public class CharacterController : MonoBehaviour
         if(character.IsArmed)
         {
             character.Rotate(InputSystem.Instance.Look.x);
+            character.AimingPoint = CameraSystem.Instance.AimingPoint;
         }
 
         character.SetRunning(InputSystem.Instance.IsLeftShift);
