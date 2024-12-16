@@ -20,6 +20,7 @@ public class CharacterBase : MonoBehaviour
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
     public Rig aimRig;
+    public Rig leftHandRig;
 
     public bool IsArmed { get; set; } = false;
     public bool IsRun { get; set; } = false;
@@ -90,7 +91,9 @@ public class CharacterBase : MonoBehaviour
         currentHP = characterStat.MaxHP;
         currentSP = characterStat.MaxSP;
 
-        SetArmed(false);
+        weaponHolder.SetActive(false);
+        aimRig.weight = 0f;
+        leftHandRig.weight = 0f;
     }
 
     private void Start()
@@ -208,6 +211,15 @@ public class CharacterBase : MonoBehaviour
         IsArmed = isArmed;
         weaponHolder.SetActive(isArmed);
         aimRig.weight = isArmed ? 1f : 0f;
+        leftHandRig.weight = isArmed ? 1f : 0f;
+    }
+
+    public void SetEquipState(int equipState)
+    {
+        bool isEquip = equipState == 1;
+        weaponHolder.SetActive(isEquip);
+        aimRig.weight = isEquip ? 1f : 0f;
+        leftHandRig.weight = isEquip ? 1f : 0f;
     }
 
     public void Shoot(bool isShoot)
@@ -219,12 +231,23 @@ public class CharacterBase : MonoBehaviour
     {
         isReloading = true;
         characterAnimator.SetTrigger("Reload Trigger");
+
+        leftHandRig.weight = 0f;
     }
 
     public void ReloadComplete()
     {
         currentWeapon.Reload();
         isReloading = false;
+
+        leftHandRig.weight = 1f;
+
+        Invoke(nameof(InvokeLeftHandRigActive), 0.01f);
+    }
+
+    void InvokeLeftHandRigActive()
+    {
+        leftHandRig.weight = 1f;
     }
 
     #region 지형 확인 함수

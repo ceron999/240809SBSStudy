@@ -3530,6 +3530,7 @@ MonoBehaviour:
   characterAnimator: {fileID: 1308464282}
   unityCharacterController: {fileID: 1308464284}
   aimRig: {fileID: 46515062}
+  leftHandRig: {fileID: 795930287}
   moveSpeed: 0
   walkSpeed: 1.5
   runSpeed: 3
