@@ -19,9 +19,6 @@ public class CharacterBase : MonoBehaviour
     #region 애니메이션
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
-    public RigBuilder rigBuilder;
-    public Rig aimRig;
-    public Rig leftHandRig;
 
     public bool IsArmed { get; set; } = false;
     public bool IsRun { get; set; } = false;
@@ -37,6 +34,7 @@ public class CharacterBase : MonoBehaviour
     public float runningBlend;
     #endregion
 
+    public Transform cameraPivot;
     public Transform weaponSocket;
     public GameObject weaponHolder;
 
@@ -57,6 +55,7 @@ public class CharacterBase : MonoBehaviour
     private const float JUMP_DELAY = 1f;
     public float groundCheckDistance = 0.1f;
     public float groundOffset = 0.1f;
+    public float checkRadius = 0.1f;
     public LayerMask groundLayer;
     #endregion
 
@@ -77,26 +76,14 @@ public class CharacterBase : MonoBehaviour
     public WeaponBase currentWeapon;
     private bool isShooting = false;
     private bool isReloading = false;
-    public Vector3 AimingPoint 
-    {
-        get => aimingPointTrandform.position;
-        set => aimingPointTrandform.position = value;
-    }
-    public Transform aimingPointTrandform;
 
     #endregion
     private void Awake()
     {
-        rigBuilder = GetComponent<RigBuilder>();
         characterAnimator = GetComponent<Animator>();
         unityCharacterController = GetComponent<UnityEngine.CharacterController>();
-
         currentHP = characterStat.MaxHP;
         currentSP = characterStat.MaxSP;
-
-        weaponHolder.SetActive(false);
-        aimRig.weight = 0f;
-        leftHandRig.weight = 0f;
     }
 
     private void Start()
@@ -113,12 +100,12 @@ public class CharacterBase : MonoBehaviour
         // 이동(걷기, 뛰기)
         Vector3 moveVec = new Vector3(horizontal, verticalVelocity, vertical);
 
-        if(isShooting)
+        if (isShooting)
         {
             bool isFireSuccess = currentWeapon.Fire();
             if (false == isFireSuccess)
             {
-                if(currentWeapon.RemainAmmo <=0 && false == isReloading)
+                if (currentWeapon.RemainAmmo <= 0 && false == isReloading)
                 {
                     isReloading = true;
                     Reload();
@@ -160,14 +147,13 @@ public class CharacterBase : MonoBehaviour
     {
         horizontal = input.x;
         vertical = input.y;
-
         speed = input.magnitude > 0 ? 1f : 0f;
+        Vector3 movement = Vector3.zero;
 
-        if(IsArmed)
+        if (IsArmed)
         {
-            Vector3 movement = transform.forward * vertical + transform.right * horizontal;
+            movement = transform.forward * vertical + transform.right * horizontal;
             moveSpeed = IsRun ? runSpeed : walkSpeed;
-            unityCharacterController.Move(movement * moveSpeed * Time.deltaTime);
         }
         else
         {
@@ -178,9 +164,11 @@ public class CharacterBase : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0f, rotation, 0f);
             }
 
-            unityCharacterController.Move(transform.forward * moveSpeed * Time.deltaTime);
-            
+            movement = transform.forward * speed;
         }
+
+        movement.y = verticalVelocity * Time.deltaTime;
+        unityCharacterController.Move(movement * moveSpeed * Time.deltaTime);
     }
 
 
@@ -213,18 +201,24 @@ public class CharacterBase : MonoBehaviour
     {
         IsArmed = isArmed;
         weaponHolder.SetActive(isArmed);
-        aimRig.weight = isArmed ? 1f : 0f;
-        leftHandRig.weight = isArmed ? 1f : 0f;
+        if (isArmed)
+        {
+            characterAnimator.SetTrigger("Equip Trigger");
+        }
+        else
+        {
+            characterAnimator.SetTrigger("Holster Trigger");
+        }
     }
 
     public void SetEquipState(int equipState)
     {
         bool isEquip = equipState == 1;
-        if(isEquip)
+        if (isEquip)
         {
             currentWeapon.transform.SetParent(weaponHolder.transform);
             currentWeapon.transform.localPosition = Vector3.zero;
-            currentWeapon.transform.localRotation = Quaternion.identity;
+            currentWeapon.transform.localRotation = Quaternion.Euler(0, 0f, 0);
         }
         else
         {
@@ -232,8 +226,6 @@ public class CharacterBase : MonoBehaviour
             currentWeapon.transform.localPosition = Vector3.zero;
             currentWeapon.transform.localRotation = Quaternion.identity;
         }
-        aimRig.weight = isEquip ? 1f : 0f;
-        leftHandRig.weight = isEquip ? 1f : 0f;
     }
 
     public void Shoot(bool isShoot)
@@ -246,51 +238,36 @@ public class CharacterBase : MonoBehaviour
         isReloading = true;
         characterAnimator.SetTrigger("Reload Trigger");
 
-        leftHandRig.weight = 0f;
     }
 
     public void ReloadComplete()
     {
         currentWeapon.Reload();
         isReloading = false;
-
-        leftHandRig.weight = 1f;
-
-        rigBuilder.Build();
-    }
-
-    void InvokeLeftHandRigActive()
-    {
-        leftHandRig.weight = 1f;
     }
 
     #region 지형 확인 함수
     public void FreeFall()
     {
-        jumpTimeDelta -= Time.deltaTime;
-        jumpTimeout -= Time.deltaTime;
-
-        if (jumpTimeDelta <= 0f) jumpTimeDelta = 0f;
-
         if (!isGrounded)
         {
-            verticalVelocity += gravity * Time.deltaTime;
+            verticalVelocity = -9.8f;
         }
         else
         {
-            if (jumpTimeout <= 0f)
-            {
-                verticalVelocity = 0f;
-            }
+            verticalVelocity = 0f;
         }
     }
 
     public void CheckGround()
     {
-        Vector3 spherePosition = transform.position + (Vector3.down * groundOffset);
-        isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundLayer);
+        //Vector3 spherePosition = transform.position + (Vector3.down * groundOffset);
+        //isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundLayer);
 
-        characterAnimator.SetBool("IsGrounded", isGrounded);
+        //characterAnimator.SetBool("IsGrounded", isGrounded);
+
+        Ray ray = new Ray(transform.position + (Vector3.up * groundOffset), Vector3.down);
+        isGrounded = Physics.SphereCast(ray, checkRadius, 0.1f, groundLayer);
     }
     #endregion
 }

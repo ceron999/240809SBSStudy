@@ -47,17 +47,18 @@ public class CharacterController : MonoBehaviour
         InputSystem.Instance.OnMouseScrollWheel += CommandMouseScrollWheel;
         InputSystem.Instance.OnClickThrowButton += CommandThrow;
 
+        CameraSystem.Instance.SetCameraFollowTarget(character.cameraPivot);
     }
 
     private void Update()
     {
-        CheckOverlapInteractionObject();
+        //CheckOverlapInteractionObject();
 
         character.Move(InputSystem.Instance.Movement, Camera.main.transform.eulerAngles.y);
         if(character.IsArmed)
         {
             character.Rotate(InputSystem.Instance.Look.x);
-            character.AimingPoint = CameraSystem.Instance.AimingPoint;
+            //character.AimingPoint = CameraSystem.Instance.AimingPoint;
         }
 
         character.SetRunning(InputSystem.Instance.IsLeftShift);
@@ -113,11 +114,11 @@ public class CharacterController : MonoBehaviour
     {
         if (delta > 0)
         {
-            interactionUI.SelectPrev();
+            //interactionUI.SelectPrev();
         }
         else if (delta < 0)
         {
-            interactionUI.SelectNext();
+            //interactionUI.SelectNext();
         }
     }
 
@@ -203,7 +204,7 @@ public class CharacterController : MonoBehaviour
 
         targetYaw = ClampAngle(targetYaw, float.MinValue, float.MaxValue);
         targetPitch = ClampAngle(targetPitch, bottomClamp, topClamp);
-        cameraPivot.rotation = Quaternion.Euler(targetPitch, targetYaw, 0f);
+        cameraPivot.rotation = Quaternion.Euler(targetPitch , targetYaw, 0f);
     }
 
     private float ClampAngle(float lfAngle, float lfMin, float lfMax)

@@ -87,4 +87,11 @@ public class CameraSystem : MonoBehaviour
             AimingPoint = ray.GetPoint(100f);
         }
     }
+
+    public void SetCameraFollowTarget(Transform target)
+    {
+        tpsCamera.Follow = target;
+        quaterCamera.Follow = target;
+        fpsCamera.Follow = target;
+    }
 }

@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 3
-  speed: 10
+  speed: 25
 --- !u!54 &3393959609895485101
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -190,7 +190,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &4612810456750703365
 CapsuleCollider:
   m_ObjectHideFlags: 0

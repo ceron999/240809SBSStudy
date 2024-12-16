@@ -10,12 +10,9 @@ public class Projectile : MonoBehaviour
 
     private void Start()
     {
+        Rigidbody rigid = GetComponent<Rigidbody>();
+        rigid.AddForce(transform.forward * speed, ForceMode.Impulse);
         Destroy(gameObject, lifeTime); // 본인 GameObject를 LifeTime 이후에 파괴 되도록 명령
-    }
-
-    private void Update()
-    {
-        transform.Translate(transform.forward * speed * Time.deltaTime, Space.World);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -26,13 +23,18 @@ public class Projectile : MonoBehaviour
         Debug.Log(
                 "<color=yellow> Bullet Impact !! </color> " +
                 $"name : <color=red>{collision.gameObject.name}</color>");
-        if(collision.gameObject.layer == LayerMask.NameToLayer("Character"))
+        if(collision.gameObject.layer == LayerMask.NameToLayer("HitScanner"))
         {
             Quaternion rotation = Quaternion.LookRotation(collision.contacts[0].normal);
-            EffectManager.Instance.CreateEffect(EffectType.Impact_Wood, collision.contacts[0].point, rotation);
+            //EffectManager.Instance.CreateEffect(EffectType.Impact_Wood, collision.contacts[0].point, rotation);
 
             if(collision.transform.root.TryGetComponent(out IDamage damageInterface))
             {
+                float damageMultiple = 1f;
+                if(collision.gameObject.TryGetComponent(out DamageMultiflier multiplier))
+                {
+                    damageMultiple = multiplier.DamageMultiplier;
+                }
                 damageInterface.ApplyDamage(10);
             }
         }
