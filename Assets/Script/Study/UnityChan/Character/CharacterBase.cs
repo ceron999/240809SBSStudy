@@ -19,6 +19,7 @@ public class CharacterBase : MonoBehaviour
     #region 애니메이션
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
+    public RigBuilder rigBuilder;
     public Rig aimRig;
     public Rig leftHandRig;
 
@@ -36,6 +37,7 @@ public class CharacterBase : MonoBehaviour
     public float runningBlend;
     #endregion
 
+    public Transform weaponSocket;
     public GameObject weaponHolder;
 
     #region 이동 데이터
@@ -85,6 +87,7 @@ public class CharacterBase : MonoBehaviour
     #endregion
     private void Awake()
     {
+        rigBuilder = GetComponent<RigBuilder>();
         characterAnimator = GetComponent<Animator>();
         unityCharacterController = GetComponent<UnityEngine.CharacterController>();
 
@@ -217,7 +220,18 @@ public class CharacterBase : MonoBehaviour
     public void SetEquipState(int equipState)
     {
         bool isEquip = equipState == 1;
-        weaponHolder.SetActive(isEquip);
+        if(isEquip)
+        {
+            currentWeapon.transform.SetParent(weaponHolder.transform);
+            currentWeapon.transform.localPosition = Vector3.zero;
+            currentWeapon.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            currentWeapon.transform.SetParent(weaponSocket.transform);
+            currentWeapon.transform.localPosition = Vector3.zero;
+            currentWeapon.transform.localRotation = Quaternion.identity;
+        }
         aimRig.weight = isEquip ? 1f : 0f;
         leftHandRig.weight = isEquip ? 1f : 0f;
     }
@@ -242,7 +256,7 @@ public class CharacterBase : MonoBehaviour
 
         leftHandRig.weight = 1f;
 
-        Invoke(nameof(InvokeLeftHandRigActive), 0.01f);
+        rigBuilder.Build();
     }
 
     void InvokeLeftHandRigActive()
