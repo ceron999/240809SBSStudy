@@ -19,6 +19,9 @@ public class CharacterBase : MonoBehaviour
     #region 애니메이션
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
+    public RigBuilder rigBuilder;
+    public Rig aimRig;
+    public Rig leftHandRig;
 
     public bool IsArmed { get; set; } = false;
     public bool IsRun { get; set; } = false;
@@ -76,14 +79,24 @@ public class CharacterBase : MonoBehaviour
     public WeaponBase currentWeapon;
     private bool isShooting = false;
     private bool isReloading = false;
+    public Vector3 AimingPoint
+    {
+        get => aimingPointTransform.position; 
+        set => aimingPointTransform.position = value;
+    }
+    public Transform aimingPointTransform;
 
     #endregion
     private void Awake()
     {
+        rigBuilder = GetComponent<RigBuilder>();
         characterAnimator = GetComponent<Animator>();
         unityCharacterController = GetComponent<UnityEngine.CharacterController>();
         currentHP = characterStat.MaxHP;
         currentSP = characterStat.MaxSP;
+
+        aimRig.weight = 0f;
+        leftHandRig.weight = 0f;
     }
 
     private void Start()
@@ -226,6 +239,8 @@ public class CharacterBase : MonoBehaviour
             currentWeapon.transform.localPosition = Vector3.zero;
             currentWeapon.transform.localRotation = Quaternion.identity;
         }
+        aimRig.weight = isEquip ? 1 : 0;
+        leftHandRig.weight = isEquip ? 1 : 0;
     }
 
     public void Shoot(bool isShoot)
@@ -238,12 +253,22 @@ public class CharacterBase : MonoBehaviour
         isReloading = true;
         characterAnimator.SetTrigger("Reload Trigger");
 
+        leftHandRig.weight = 0;
     }
 
     public void ReloadComplete()
     {
         currentWeapon.Reload();
         isReloading = false;
+
+        leftHandRig.weight = 1f;
+
+        rigBuilder.Build();
+    }
+
+    void InvokeLeftHandRigActive()
+    {
+        leftHandRig.weight = 1f;
     }
 
     #region 지형 확인 함수
