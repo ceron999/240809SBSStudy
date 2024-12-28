@@ -9,6 +9,7 @@ public class WeaponBase : MonoBehaviour
     public Projectile bulletPrefab; // 총알 프리팹 객체 - 발사 시 => 복사할 총알의 원본 GameObject
     public Transform firePoint; // 총알 발사 위치+방향을 의미하는 Transform
 
+    public float weaponDamage;
     public float fireRate; // 연사 속도 (시간 값) => ex) 0.1: 0.1초에 1발씩 발사 할 수 있는 값
     public int clipSize; // 탄창 크기
 
@@ -17,6 +18,7 @@ public class WeaponBase : MonoBehaviour
 
     private void Awake()
     {
+        bulletPrefab.projectileDamage = weaponDamage;
         currentAmmo = clipSize;
         fireRate = Mathf.Max(fireRate, 0.1f); // 연사 속도가 0.1보다 작다면, 0.1로 설정
     }

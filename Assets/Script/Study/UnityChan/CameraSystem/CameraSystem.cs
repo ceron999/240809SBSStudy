@@ -91,7 +91,6 @@ public class CameraSystem : MonoBehaviour
     public void SetCameraFollowTarget(Transform target)
     {
         tpsCamera.Follow = target;
-        quaterCamera.Follow = target;
-        fpsCamera.Follow = target;
+        //tpsCamera.LookAt = target;  
     }
 }

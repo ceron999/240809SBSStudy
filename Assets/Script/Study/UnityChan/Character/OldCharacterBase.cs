@@ -53,8 +53,8 @@ namespace OldScript
 
         public float CurrentHP => currentHP;
         public float CurrentSP => currentSP;
-        public float MaxHP => characterStat.MaxHP;
-        public float MaxSP => characterStat.MaxSP;
+        public float MaxHP => characterStat.HP;
+        public float MaxSP => characterStat.SP;
         #endregion
 
         private void Awake()
@@ -62,8 +62,8 @@ namespace OldScript
             characterAnimator = GetComponent<Animator>();
             unityCharacterController = GetComponent<UnityEngine.CharacterController>();
 
-            currentHP = characterStat.MaxHP;
-            currentSP = characterStat.MaxSP;
+            currentHP = characterStat.HP;
+            currentSP = characterStat.SP;
         }
 
         private void Start()
@@ -83,12 +83,12 @@ namespace OldScript
             if (isRunning)
             {
                 currentSP -= (characterStat.RunStaminaCost * Time.deltaTime);
-                currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
+                currentSP = Mathf.Clamp(currentSP, 0, characterStat.SP);
             }
             else
             {
                 currentSP += (characterStat.StaminaRecoverySpeed * Time.deltaTime);
-                currentSP = Mathf.Clamp(currentSP, 0, characterStat.MaxSP);
+                currentSP = Mathf.Clamp(currentSP, 0, characterStat.SP);
             }
             float targetSpeed = isRunning && currentSP > 0 ? characterStat.RunSpeed : characterStat.WalkSpeed;
 

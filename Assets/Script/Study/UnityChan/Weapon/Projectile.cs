@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    public float projectileDamage;
     public float lifeTime; // 총알이 활성화 되고, 살아있는 지속 시간[제한 시간]
     public float speed; // 총알의 속도
 

@@ -56,10 +56,10 @@ public class CharacterControllerBasic : MonoBehaviour
             character.Rotate(InputSystem.Instance.Look.x);
         }
 
-        character.SetRunning(InputSystem.Instance.IsLeftShift);
+        //character.SetRunning(InputSystem.Instance.IsLeftShift);
 
-        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
-        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
+        //ingameUI.SetHP(character.CurrentHP, character.MaxHP);
+        //ingameUI.SetSP(character.CurrentSP, character.MaxSP);
 
         //TPS
         if(Input.GetKeyDown(KeyCode.Alpha1))
@@ -117,7 +117,7 @@ public class CharacterControllerBasic : MonoBehaviour
     }
     private void CommandJump()
     {
-        character.Jump();
+        //character.Jump();
     }
 
     private void CommandAttack()

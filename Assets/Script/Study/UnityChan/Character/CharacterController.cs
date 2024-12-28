@@ -52,19 +52,12 @@ public class CharacterController : MonoBehaviour
 
     private void Update()
     {
-        //CheckOverlapInteractionObject();
-
         character.Move(InputSystem.Instance.Movement, Camera.main.transform.eulerAngles.y);
         if(character.IsArmed)
         {
             character.Rotate(InputSystem.Instance.Look.x);
             //character.AimingPoint = CameraSystem.Instance.AimingPoint;
         }
-
-        character.SetRunning(InputSystem.Instance.IsLeftShift);
-
-        ingameUI.SetHP(character.CurrentHP, character.MaxHP);
-        ingameUI.SetSP(character.CurrentSP, character.MaxSP);
 
         //TPS
         if(Input.GetKeyDown(KeyCode.Alpha1))
@@ -133,7 +126,7 @@ public class CharacterController : MonoBehaviour
 
     private void CommandJump()
     {
-        character.Jump();
+        //character.Jump();
     }
 
     private void CommandAttack()
@@ -199,7 +192,7 @@ public class CharacterController : MonoBehaviour
             float pitch = InputSystem.Instance.Look.y;
 
             targetYaw += yaw;
-            targetPitch += pitch;
+            targetPitch -= pitch;
         }
 
         targetYaw = ClampAngle(targetYaw, float.MinValue, float.MaxValue);
