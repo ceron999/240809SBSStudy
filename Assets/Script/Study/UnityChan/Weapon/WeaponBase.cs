@@ -15,6 +15,7 @@ public class WeaponBase : MonoBehaviour
 
     private float lastFireTime; // 마지막 발사 실제 시간
     private int currentAmmo; // 현재 탄창의 남은 총알 수
+    public float spread = 1f;
 
     private void Awake()
     {
@@ -28,7 +29,11 @@ public class WeaponBase : MonoBehaviour
         if (currentAmmo <= 0 || Time.time - lastFireTime < fireRate)
             return false;
 
-        Projectile bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        Vector2 randomSpread = Random.insideUnitSphere;
+        Vector2 spreadRotaion = randomSpread * spread;  
+
+        Projectile bullet = Instantiate(bulletPrefab, firePoint.position,
+            firePoint.rotation * Quaternion.Euler(spreadRotaion.x, 0f, spreadRotaion.y));
         bullet.gameObject.SetActive(true);
         lastFireTime = Time.time;
         currentAmmo--;

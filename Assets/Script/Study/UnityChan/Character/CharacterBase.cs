@@ -5,16 +5,22 @@ using UnityEngine.Animations.Rigging;
 
 public class CharacterBase : MonoBehaviour, IDamage
 {
+    public bool IsAlive => curStat.HP > 0;
+
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
     public RigBuilder rigBuilder;
     public Rig aimRig;
     public Rig leftHandRig;
     public Transform cameraPivot;
+    public Rigidbody[] ragDollRigidbodies;
 
     public CharacterStatData maxStat;
     public CharacterStatData curStat;
 
+    public bool IsNPC { get; set; } = false;
+
+    public bool IsAimingActive { get; set; } = true;
     public bool IsArmed { get; set; } = false;
     public bool IsRun { get; set; } = false;
     public Vector3 AimingPoint
@@ -50,11 +56,15 @@ public class CharacterBase : MonoBehaviour, IDamage
     private bool isReloading = false;
     private bool isEquipped = false;
 
+    public System.Action<float, float> OnDamaged;
+
     private void Awake()
     {
         rigBuilder = GetComponent<RigBuilder>();
         characterAnimator = GetComponent<Animator>();
         unityCharacterController = GetComponent<UnityEngine.CharacterController>();
+        ragDollRigidbodies = GetComponentsInChildren<Rigidbody>();
+        SetRagDollActive(false);
 
         aimRig.weight = 0f;
         leftHandRig.weight = 0f;
@@ -70,6 +80,9 @@ public class CharacterBase : MonoBehaviour, IDamage
 
     private void Update()
     {
+        if (!IsAlive)
+            return;
+
         CheckGround();
         FreeFall();
 
@@ -94,10 +107,20 @@ public class CharacterBase : MonoBehaviour, IDamage
         characterAnimator.SetFloat("Vertical", vertical);
         characterAnimator.SetFloat("RunningBlend", runningBlend);
 
-        aimRig.weight = isEquipped ? 1f : 0f;
+        aimRig.weight = IsAimingActive && isEquipped ? 1f : 0f;
         leftHandRig.weight = isEquipped ? 1f : 0f;
     }
 
+    public void SetRagDollActive(bool isActive)
+    {
+        for (int i = 0; i < ragDollRigidbodies.Length; i++)
+        {
+            ragDollRigidbodies[i].isKinematic = !isActive;
+        }
+
+        unityCharacterController.enabled = !isActive;
+        characterAnimator.enabled = !isActive;
+    }
 
     public void Shoot(bool isShoot)
     {
@@ -155,6 +178,9 @@ public class CharacterBase : MonoBehaviour, IDamage
     }
     public void Move(Vector2 input, float yAxisAngle)
     {
+        if (!IsAlive)
+            return;
+
         horizontal = input.x;
         vertical = input.y;
         speed = input.magnitude > 0f ? 1f : 0f;
@@ -182,6 +208,8 @@ public class CharacterBase : MonoBehaviour, IDamage
 
     public void Rotate(float angle)
     {
+        if (!IsAlive)
+            return;
         float rotation = transform.rotation.eulerAngles.y + angle;
         transform.rotation = Quaternion.Euler(0, rotation, 0);
     }
@@ -199,7 +227,7 @@ public class CharacterBase : MonoBehaviour, IDamage
         leftHandRig.weight = 1f;
         isReloading = false;
 
-        rigBuilder.Build();
+        //rigBuilder.Build();
     }
 
     public void ApplyDamage(float damage)
@@ -208,6 +236,19 @@ public class CharacterBase : MonoBehaviour, IDamage
         if(curStat.HP <= 0)
         {
             // »ç¸Á
+            isShooting = false;
+
+            SetRagDollActive(true);
+
+            if(IsNPC)
+                Destroy(gameObject, 5f);
         }
+
+        OnDamaged?.Invoke(maxStat.HP, curStat.HP);
+    }
+
+    public Transform GetBoneTransform(HumanBodyBones bone)
+    {
+        return characterAnimator ? characterAnimator.GetBoneTransform(bone) : transform;
     }
 }

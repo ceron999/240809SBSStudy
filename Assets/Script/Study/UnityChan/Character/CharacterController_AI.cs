@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,24 +11,24 @@ public enum AIState
 
 public class CharacterController_AI : MonoBehaviour
 {
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
 
-        if(aiState == AIState.Battle && target != null)
+        if (aiState == AIState.Battle && target != null)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, patrolWayPoints[currentWayPointIndex].position);
+            Gizmos.DrawLine(transform.position, target.transform.position);
         }
 
-        if(aiState == AIState.Peaceful && patrolWayPoints.Count >0)
+        if (aiState == AIState.Peaceful && patrolWaypoints.Count > 0)
         {
-            Gizmos.color= Color.blue;
-            Gizmos.DrawLine(transform.position, patrolWayPoints[currentWayPointIndex].position);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, patrolWaypoints[currentWaypointIndex].position);
         }
     }
+
     public CharacterBase linkedCharacter;
     public UnityEngine.AI.NavMeshAgent navAgent;
 
@@ -35,8 +36,8 @@ public class CharacterController_AI : MonoBehaviour
     public float detectionRadius = 10f;
     public LayerMask detectionLayers;
 
-    public List<Transform> patrolWayPoints = new List<Transform>();
-    public int currentWayPointIndex = 0;
+    public List<Transform> patrolWaypoints = new List<Transform>();
+    public int currentWaypointIndex = 0;
 
     public CharacterBase target = null;
 
@@ -44,24 +45,86 @@ public class CharacterController_AI : MonoBehaviour
     {
         linkedCharacter = GetComponent<CharacterBase>();
         navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        navAgent.updateRotation = false;
+    }
+
+    private void Start()
+    {
+        navAgent.speed = linkedCharacter.moveSpeed;
+        linkedCharacter.SetArmed(true);
+        linkedCharacter.IsNPC = true;
+        SetAiState(AIState.Peaceful);
     }
 
     private void Update()
     {
-        if (navAgent.remainingDistance <= navAgent.stoppingDistance)
+        if (aiState == AIState.Peaceful)
         {
-            OnArriveDestination(); ;
-        }
+            if (navAgent.remainingDistance <= navAgent.stoppingDistance)
+            {
+                OnArrivedDestination();
+            }
 
-        if(navAgent.hasPath)
+            if (navAgent.hasPath)
+            {
+                Vector3 moveDirection = (navAgent.steeringTarget - transform.position).normalized;
+                Vector3 localDirection = linkedCharacter.transform.InverseTransformDirection(moveDirection);
+                Vector2 input = new Vector2(localDirection.x, localDirection.z);
+
+                linkedCharacter.Move(input, 0);
+                linkedCharacter.transform.forward = moveDirection;
+            }
+
+            UpdateDetecting();
+        }
+        else if (aiState == AIState.Battle)
         {
-            Vector3 moveDistance = (navAgent.steeringTarget - transform.position).normalized;
-            Vector2 input = new Vector2(moveDistance.x, moveDistance.y);
-
-            linkedCharacter.Move(input, 0);
+            UpdateCombat();
         }
+    }
 
-        UpdateDetecting();
+    private void UpdateCombat()
+    {
+        if (aiState != AIState.Battle || target == null)
+            return;
+
+        float distance = Vector3.Distance(transform.position, target.transform.position);
+        float weaponRange = 7f;
+        if (distance > weaponRange)
+        {
+            ChaseTarget();
+            linkedCharacter.Shoot(false);
+
+            if(navAgent.hasPath)
+            {
+                Vector3 moveDirection = (navAgent.steeringTarget - transform.position).normalized;
+                Vector3 localDirerction = linkedCharacter.transform.InverseTransformDirection(moveDirection);
+                Vector2 input = new Vector2(localDirerction.x, localDirerction.z);
+
+                linkedCharacter.Move(input, 0);
+                linkedCharacter.transform.forward = moveDirection;
+
+            }
+        }
+        else
+        {
+            if(target.IsAlive)
+            {
+                // TODO : Attack
+                Transform targetChestTransform = target.GetBoneTransform(HumanBodyBones.Chest);
+                linkedCharacter.AimingPoint = targetChestTransform.position;
+                linkedCharacter.transform.forward = (target.transform.position - transform.position).normalized;
+                linkedCharacter.Move(Vector2.zero, 0);
+                linkedCharacter.Shoot(true);
+            }
+            else
+            {
+                target = null;
+                linkedCharacter.Shoot(false);
+                SetAiState(AIState.Peaceful);
+            }
+
+        }
     }
 
     private void UpdateDetecting()
@@ -84,33 +147,60 @@ public class CharacterController_AI : MonoBehaviour
             {
                 if (character.gameObject.CompareTag("Player"))
                 {
-                    target = character;
-                    aiState = AIState.Battle;
-                    break;
+                    if(character.IsAlive)
+                    {
+                        target = character;
+                        SetAiState(AIState.Battle);
+                        break;
+                    }
                 }
             }
         }
     }
 
+    public void SetAiState(AIState state)
+    {
+        aiState = state;
+        linkedCharacter.IsAimingActive = aiState == AIState.Battle;
+        navAgent.SetDestination(transform.position);
+    }
+
     public void SetDestination(Vector3 destination)
     {
-        navAgent.SetDestination(destination);   
-    }
-    public void OnArriveDestination()
-    {
-        MoveToNextWayPoint();
+        navAgent.SetDestination(destination);
     }
 
-    public void MoveToNextWayPoint()
+    public void OnArrivedDestination()
     {
-        if (patrolWayPoints.Count <= 0)
+        MoveToNextWaypoint();
+    }
+
+    public void MoveToNextWaypoint()
+    {
+        if (patrolWaypoints.Count <= 0)
             return;
 
-        currentWayPointIndex++;
+        currentWaypointIndex++;
+        if (currentWaypointIndex >= patrolWaypoints.Count)
+            currentWaypointIndex = 0;
 
-        if(currentWayPointIndex > patrolWayPoints.Count)
-            currentWayPointIndex = 0;
+        SetDestination(patrolWaypoints[currentWaypointIndex].position);
+    }
 
-        SetDestination(patrolWayPoints[currentWayPointIndex].position);
+    public void ChaseTarget()
+    {
+        if (target == null)
+            return;
+
+        float distance = Vector3.Distance(transform.position, target.transform.position);
+        float weaponRange = 7f;
+        if (distance > weaponRange)
+        {
+            SetDestination(target.transform.position);
+        }
+        else
+        {
+            SetDestination(transform.position);
+        }
     }
 }
