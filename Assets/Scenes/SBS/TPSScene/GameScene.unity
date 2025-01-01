@@ -5927,6 +5927,11 @@ MonoBehaviour:
   m_Damping: 0
   m_DampingWhenOccluded: 0
   m_OptimalTargetDistance: 0
+--- !u!4 &1711856773 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6330442972282039894, guid: a851f64a21d7c304ab1dcdc1f90e3dfd, type: 3}
+  m_PrefabInstance: {fileID: 5902135985061693170}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1746852934
 GameObject:
   m_ObjectHideFlags: 0
@@ -8877,6 +8882,7 @@ MonoBehaviour:
   aimRig: {fileID: 625404193823161595}
   leftHandRig: {fileID: 4348605473044763261}
   cameraPivot: {fileID: 5963606808486577597}
+  ragDollRigidbodies: []
   maxStat: {fileID: 11400000, guid: 11d9e9760d038bf46baa8c6c2c9452c4, type: 2}
   curStat: {fileID: 0}
   speed: 0
@@ -8895,7 +8901,7 @@ MonoBehaviour:
   weaponSocket: {fileID: 6540090503232437946}
   weaponHolder: {fileID: 4530336143855541184}
   currentWeapon: {fileID: 8999127197637941062}
-  aimingPointTransform: {fileID: 0}
+  aimingPointTransform: {fileID: 4553684646627633675}
 --- !u!1 &1707491191294658736
 GameObject:
   m_ObjectHideFlags: 0
@@ -13094,6 +13100,10 @@ PrefabInstance:
       propertyPath: patrolWayPoints.Array.data[2]
       value: 
       objectReference: {fileID: 457667718}
+    - target: {fileID: 1433451231391994077, guid: a851f64a21d7c304ab1dcdc1f90e3dfd, type: 3}
+      propertyPath: aimingPointTransform
+      value: 
+      objectReference: {fileID: 1711856773}
     - target: {fileID: 4824377294921042633, guid: a851f64a21d7c304ab1dcdc1f90e3dfd, type: 3}
       propertyPath: m_Name
       value: Character [NPC]
@@ -15972,6 +15982,7 @@ MonoBehaviour:
   weaponDamage: 0
   fireRate: 0.25
   clipSize: 100
+  spread: 1
 --- !u!136 &9003000796270168140
 CapsuleCollider:
   m_ObjectHideFlags: 0
