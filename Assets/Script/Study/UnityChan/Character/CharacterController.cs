@@ -6,8 +6,6 @@ public class CharacterController : MonoBehaviour
 {
     public CharacterBase character;
     public LayerMask interactionLayer;
-    public InteractionUI interactionUI;
-    public IngameUI ingameUI;
 
     private IInteractable[] interactableObjects;
 
@@ -119,7 +117,7 @@ public class CharacterController : MonoBehaviour
     {
         if (interactableObjects != null && interactableObjects.Length > 0)
         {
-            interactionUI.Execute();
+            //interactionUI.Execute();
             //interactableObjects[0].Interact();
         }
     }
@@ -180,7 +178,7 @@ public class CharacterController : MonoBehaviour
         }
         interactableObjects = interactables.ToArray();
 
-        interactionUI.SetInteractableObjects(interactableObjects);
+        //interactionUI.SetInteractableObjects(interactableObjects);
     }
 
     #region Camera Func

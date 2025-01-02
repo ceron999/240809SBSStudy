@@ -5,7 +5,7 @@ using UnityEngine.Animations.Rigging;
 
 public class CharacterBase : MonoBehaviour, IDamage
 {
-    public bool IsAlive => curStat.HP > 0;
+    public bool IsAlive => curStat.CharacterData.HP > 0;
 
     public Animator characterAnimator;
     public UnityEngine.CharacterController unityCharacterController;
@@ -69,13 +69,15 @@ public class CharacterBase : MonoBehaviour, IDamage
         aimRig.weight = 0f;
         leftHandRig.weight = 0f;
 
+        maxStat = GameDataModel.Singleton.PlayerCharacterStatData;
+
         curStat = ScriptableObject.CreateInstance<CharacterStatData>();
-        curStat.HP = maxStat.HP;
-        curStat.SP = maxStat.SP;
-        curStat.WalkSpeed = maxStat.WalkSpeed;
-        curStat.RunSpeed = maxStat.RunSpeed;
-        curStat.RunStaminaCost = maxStat.RunStaminaCost;
-        curStat.StaminaRecoverySpeed = maxStat.StaminaRecoverySpeed;
+        curStat.CharacterData.HP = maxStat.CharacterData.HP;
+        curStat.CharacterData.SP = maxStat.CharacterData.SP;
+        curStat.CharacterData.WalkSpeed = maxStat.CharacterData.WalkSpeed;
+        curStat.CharacterData.RunSpeed = maxStat.CharacterData.RunSpeed;
+        curStat.CharacterData.RunStaminaCost = maxStat.CharacterData.RunStaminaCost;
+        curStat.CharacterData.StaminaRecoverySpeed = maxStat.CharacterData.StaminaRecoverySpeed;
     }
 
     private void Update()
@@ -232,8 +234,8 @@ public class CharacterBase : MonoBehaviour, IDamage
 
     public void ApplyDamage(float damage)
     {
-        curStat.HP -= damage;
-        if(curStat.HP <= 0)
+        curStat.CharacterData.HP -= damage;
+        if(curStat.CharacterData.HP <= 0)
         {
             // »ç¸Á
             isShooting = false;
@@ -244,7 +246,7 @@ public class CharacterBase : MonoBehaviour, IDamage
                 Destroy(gameObject, 5f);
         }
 
-        OnDamaged?.Invoke(maxStat.HP, curStat.HP);
+        OnDamaged?.Invoke(maxStat.CharacterData.HP, curStat.CharacterData.HP);
     }
 
     public Transform GetBoneTransform(HumanBodyBones bone)

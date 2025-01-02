@@ -4,22 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class LoadingUI : MonoBehaviour
+public class LoadingUI : UIBase
 {
     public static LoadingUI Instance { get; private set; }
 
     public Image loadingBar;
     public TextMeshProUGUI loadingText;
 
-    private void Awake()
+    private void OnEnable()
     {
-        Instance = this;
-        gameObject.SetActive(false);
-
-        loadingText.text = $"{0}";
         loadingBar.fillAmount = 0;
-
-        DontDestroyOnLoad(gameObject);
+        loadingText.text = $"0 %";
     }
 
     public void SetProgress(float progress)

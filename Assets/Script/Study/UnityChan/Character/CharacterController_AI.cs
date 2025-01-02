@@ -35,6 +35,7 @@ public class CharacterController_AI : MonoBehaviour
     public AIState aiState = AIState.Peaceful;
     public float detectionRadius = 10f;
     public LayerMask detectionLayers;
+    public LayerMask attackValidLayer;
 
     public List<Transform> patrolWaypoints = new List<Transform>();
     public int currentWaypointIndex = 0;
@@ -88,42 +89,102 @@ public class CharacterController_AI : MonoBehaviour
         if (aiState != AIState.Battle || target == null)
             return;
 
+        if(!target.IsAlive)
+        {
+            target = null;
+            linkedCharacter.Shoot(false);
+            SetAiState(AIState.Peaceful);
+            return;
+        }
+
         float distance = Vector3.Distance(transform.position, target.transform.position);
         float weaponRange = 7f;
+        float limitDistance = 10f;
+
+        // 인식 범위 밖에 존재하면 다시 Peaceful
+        if(distance > limitDistance)
+        {
+            target = null;
+            linkedCharacter.Shoot(false);
+            SetAiState(AIState.Peaceful);
+            return;
+        }
+       
+
         if (distance > weaponRange)
         {
+            // 적 발견 후 무기 사정거리보다 멀 때
             ChaseTarget();
-            linkedCharacter.Shoot(false);
-
-            if(navAgent.hasPath)
-            {
-                Vector3 moveDirection = (navAgent.steeringTarget - transform.position).normalized;
-                Vector3 localDirerction = linkedCharacter.transform.InverseTransformDirection(moveDirection);
-                Vector2 input = new Vector2(localDirerction.x, localDirerction.z);
-
-                linkedCharacter.Move(input, 0);
-                linkedCharacter.transform.forward = moveDirection;
-
-            }
+            UpdateChase();
         }
         else
         {
-            if(target.IsAlive)
+            // 적 사격
+
+            Vector3 pivot = linkedCharacter.transform.position + Vector3.up;
+            Vector3 targetPosition = target.transform.position + Vector3.up;
+            Vector3 direction = (targetPosition - pivot).normalized;
+
+            // 플레이어를 바라볼 수 있음을 확인
+            bool isRaycastSuccessToTarget = false;
+            Ray ray = new Ray(pivot, direction);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo,
+                weaponRange, attackValidLayer, QueryTriggerInteraction.Ignore))
             {
-                // TODO : Attack
-                Transform targetChestTransform = target.GetBoneTransform(HumanBodyBones.Chest);
-                linkedCharacter.AimingPoint = targetChestTransform.position;
-                linkedCharacter.transform.forward = (target.transform.position - transform.position).normalized;
-                linkedCharacter.Move(Vector2.zero, 0);
-                linkedCharacter.Shoot(true);
+                if (hitInfo.transform.root.gameObject.CompareTag("Player"))
+                {
+                    isRaycastSuccessToTarget = true;
+                }
+            }
+
+            // 총구를 플레이어 향할 수 있는지 확인
+            Vector3 weaponFirePoint = linkedCharacter.currentWeapon.firePoint.position;
+            Vector3 directionFromWeapon = (weaponFirePoint - targetPosition);
+            bool isRaycastSuccessFromWeapon = false;
+            Ray weaponRay = new Ray(weaponFirePoint, directionFromWeapon);
+            if (Physics.Raycast(weaponRay, out RaycastHit weaponHitInfo,
+                weaponRange, attackValidLayer, QueryTriggerInteraction.Ignore))
+            {
+                if (hitInfo.transform.root.gameObject.CompareTag("Player"))
+                {
+                    isRaycastSuccessFromWeapon = true;
+                }
+            }
+
+            if (isRaycastSuccessToTarget && isRaycastSuccessFromWeapon)
+            {
+                if (target.IsAlive)
+                {
+                    // TODO : Attack
+                    Transform targetChestTransform = target.GetBoneTransform(HumanBodyBones.Chest);
+                    linkedCharacter.AimingPoint = targetChestTransform.position;
+                    linkedCharacter.transform.forward = (target.transform.position - transform.position).normalized;
+                    linkedCharacter.Move(Vector2.zero, 0);
+                    linkedCharacter.Shoot(true);
+                }
             }
             else
             {
-                target = null;
-                linkedCharacter.Shoot(false);
-                SetAiState(AIState.Peaceful);
-            }
+                linkedCharacter.AimingPoint = transform.position + transform.forward * 100f;
 
+                ChaseTarget();
+                UpdateChase();
+            }
+        }
+    }
+
+    private void UpdateChase()
+    {
+        linkedCharacter.Shoot(false);
+
+        if (navAgent.hasPath)
+        {
+            Vector3 moveDirection = (navAgent.steeringTarget - transform.position).normalized;
+            Vector3 localDirection = linkedCharacter.transform.InverseTransformDirection(moveDirection);
+            Vector2 input = new Vector2(localDirection.x, localDirection.z);
+
+            linkedCharacter.Move(input, 0);
+            linkedCharacter.transform.forward = moveDirection;
         }
     }
 
@@ -192,15 +253,6 @@ public class CharacterController_AI : MonoBehaviour
         if (target == null)
             return;
 
-        float distance = Vector3.Distance(transform.position, target.transform.position);
-        float weaponRange = 7f;
-        if (distance > weaponRange)
-        {
-            SetDestination(target.transform.position);
-        }
-        else
-        {
-            SetDestination(transform.position);
-        }
+        SetDestination(target.transform.position);
     }
 }

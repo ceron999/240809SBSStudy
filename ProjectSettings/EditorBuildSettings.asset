@@ -5,15 +5,30 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SBS/TitleScene.unity
     guid: 8ce9e8fb7cb8f6e40b4316eeab6f9b65
-  - enabled: 1
-    path: Assets/Scenes/SBS/GameScene.unity
+  - enabled: 0
+    path: Assets/Scenes/SBS/OldGameScene.unity
     guid: 067bc6f65333dec4a8c3421605062832
   - enabled: 0
     path: Assets/Scenes/Network/TestNetworkScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/SBS/TPSScene/Main.unity
+    guid: be58a01c1e670f94289db9f37303dff9
+  - enabled: 1
+    path: Assets/Scenes/SBS/TPSScene/Empty.unity
+    guid: c6ca96474f4df194eb9d970e57096eac
+  - enabled: 1
+    path: Assets/Scenes/SBS/TPSScene/Title.unity
+    guid: dbe9282c01419f241922d9eba964f7c8
+  - enabled: 1
+    path: Assets/Scenes/SBS/TPSScene/Ingame.unity
+    guid: 7c6461c3b2f217145956659c27bae762
+  - enabled: 1
+    path: Assets/Scenes/SBS/TPSScene/GameScene.unity
+    guid: e87250765d81c36459c6a907e0155f1c
   - enabled: 0
     path: Assets/Scenes/SBS/SBSStudyScene.unity
     guid: fd2122de859befd4cb3c332f1d7f5982
